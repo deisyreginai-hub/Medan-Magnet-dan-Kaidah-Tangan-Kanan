@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif Fisika: Induksi Elektromagnetik</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        :root {
+            --primary: #065f46; /* Hijau Madrasah */
+            --primary-light: #10b981;
+            --secondary: #0284c7; /* Biru Danau Limboto */
+            --accent: #f59e0b; /* Kuning Energi */
+            --bg-color: #f0fdf4;
+            --text-main: #1f2937;
+            --text-light: #4b5563;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .app-container {
+            background-color: var(--white);
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 800px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .running-text-container {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 8px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .running-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .nav-bar {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: var(--white);
+            border-bottom: 2px solid #e5e7eb;
+            padding: 10px;
+            gap: 10px;
+            z-index: 5;
+            display: none; /* Hidden on cover page */
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background-color: #e5e7eb;
+            color: var(--primary);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cover Page Styles */
+        .cover-page {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #cffafe 100%);
+        }
+
+        .cover-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .cover-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 30px;
+        }
+
+        .profile-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary);
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            background-color: #e5e7eb;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid var(--primary-light);
+        }
+
+        .profile-img svg {
+            width: 60px;
+            height: 60px;
+            fill: #9ca3af;
+        }
+
+        .btn-start {
+            background-color: var(--accent);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            background-color: #d97706;
+        }
+
+        /* --- Form Login Styles --- */
+        .login-box {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 20px;
+            border-top: 4px solid var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            background: #fee2e2;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        h2 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary-light); padding-bottom: 5px; }
+        h3 { color: var(--secondary); margin: 15px 0 10px 0; }
+        p { margin-bottom: 15px; line-height: 1.6; }
+        ul { margin-left: 20px; margin-bottom: 15px; line-height: 1.6; }
+        
+        .context-box {
+            background-color: #e0f2fe;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+
+        /* Simulasi Medan Magnet Styles */
+        .sim-container {
+            background-color: #1f2937;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .sim-canvas-area {
+            height: 300px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .wire-center {
+            width: 40px;
+            height: 40px;
+            background: #d97706;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            border: 4px solid #b45309;
+        }
+
+        .magnetic-field-circle {
+            position: absolute;
+            border: 2px dashed #3b82f6;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s, border-width 0.3s;
+        }
+
+        .compass {
+            position: absolute;
+            width: 12px;
+            height: 50px;
+            background: linear-gradient(to bottom, #ef4444 50%, #d1d5db 50%);
+            border-radius: 6px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            transform-origin: center center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            opacity: 0;
+        }
+
+        .control-panel {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .feedback-box {
+            background-color: #fef3c7;
+            border: 2px dashed var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #92400e;
+            min-height: 80px;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .question-card {
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-light);
+            background-color: #f0fdf4;
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #166534;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.success {
+            background-color: #dcfce7;
+            color: #166534;
+            border-left: 4px solid var(--success);
+        }
+
+        .quiz-feedback.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        .quiz-nav {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+        }
+
+        .btn-action:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .score-board {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            border: 8px solid #d1fae5;
+        }
+
+        /* Desain Baru: Peta Ekspedisi Danau Limboto */
+        .adventure-map-container {
+            margin-bottom: 30px;
+            padding: 40px 15px 30px 15px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0369a1 100%);
+            border-radius: 12px;
+            border: 4px solid #0c4a6e;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3), var(--shadow);
+            text-align: center;
+        }
+        
+        .map-bg-svg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .adventure-map {
+            position: relative;
+            height: 180px;
+            width: 100%;
+            margin-top: 15px;
+            z-index: 2;
+        }
+
+        .adventure-map::before {
+            display: none; /* Menyembunyikan garis lurus lama */
+        }
+
+        .map-node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #0f172a;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 4px solid white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            transform: translate(-50%, -50%);
+        }
+
+        .map-node.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 20px 5px rgba(245, 158, 11, 0.7);
+            transform: translate(-50%, -50%) scale(1.3);
+            border-color: #fffbeb;
+        }
+
+        /* Koordinat Posisi Zigzag */
+        #node-0 { left: 10%; top: 75%; }
+        #node-1 { left: 30%; top: 25%; }
+        #node-2 { left: 50%; top: 75%; }
+        #node-3 { left: 70%; top: 25%; }
+        #node-4 { left: 90%; top: 75%; }
+
+        .map-node.completed-correct {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+        }
+
+        .map-node.completed-wrong {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Papan Nama Pos */
+        .signboard {
+            background: #713f12;
+            color: #fef3c7;
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: 3px solid #a16207;
+            display: inline-block;
+            margin-top: 30px;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        /* Desain Kode Pos */
+        .pos-code-badge {
+            background-color: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            border: 2px solid #d97706;
+            box-shadow: inset 0 0 5px rgba(255,255,255,0.4);
+            letter-spacing: 1px;
+        }
+
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 15px;
+            height: 250px;
+            margin-top: 40px;
+        }
+
+        .podium-step {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+            width: 100px;
+            padding-top: 15px;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .podium-avatar {
+            font-size: 2.5rem;
+            position: absolute;
+            top: -45px;
+            transition: transform 0.3s;
+        }
+
+        .podium-avatar.winner-jump {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .podium-1 { height: 180px; background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: white; border: 2px solid #fbbf24; }
+        .podium-2 { height: 130px; background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%); color: white; border: 2px solid #94a3b8; }
+        .podium-3 { height: 90px; background: linear-gradient(135deg, #d97706 0%, #92400e 100%); color: white; border: 2px solid #b45309; }
+
+        .rank-label {
+            font-size: 2rem;
+            margin-top: 5px;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            margin-top: 5px;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        /* Canvas Magnet Batang Styles */
+        .magnet-canvas-container {
+            position: relative;
+            background: #ffffff;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .magnet-canvas-container canvas {
+            touch-action: none; /* Mencegah layar scroll saat drag kompas */
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+        }
+
+        /* Animasi Gambar Bergerak Materi (SVG & CSS) */
+        .materi-illustration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .compass-needle {
+            animation: needleWobble 3s infinite ease-in-out;
+            transform-origin: 50px 50px;
+        }
+
+        @keyframes needleWobble {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(20deg); }
+        }
+
+        .field-flow {
+            animation: flowLines 1.5s linear infinite;
+        }
+
+        @keyframes flowLines {
+            /* Nilai negatif membuat garis bergerak dari U (Kanan) ke S (Kiri) */
+            to { stroke-dashoffset: -16; } 
+        }
+
+        .rotating-field {
+            animation: spinCCW 5s linear infinite;
+            transform-origin: 75px 75px;
+        }
+
+        @keyframes spinCCW {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); } /* Berlawanan arah jarum jam */
+        }
+
+        /* Asesmen Sumatif Styles */
+        .asesmen-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: var(--shadow);
+            margin-top: 15px;
+        }
+
+        .asesmen-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .question-item {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #e2e8f0;
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+
+        .question-number {
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: inline-block;
+            background: #e0f2fe;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .pg-options label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .pg-options label:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .pg-options input {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        textarea.essay-input {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        textarea.essay-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+
+        .rubrik-box {
+            display: none;
+            background: #f0fdf4;
+            border: 2px solid var(--success);
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+
+        .rubrik-box h3 { color: #166534; margin-top: 0; }
+        .rubrik-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #bbf7d0; }
+        .rubrik-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .pg-correct { background-color: #dcfce7 !important; border-color: var(--success) !important; font-weight: bold; color: #166534; }
+        .pg-wrong { background-color: #fee2e2 !important; border-color: var(--danger) !important; color: #991b1b; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="running-text-container">
+            <span class="running-text">🌟 Kurikulum Berbasis Cinta | Fisika Menyenangkan | MAN 2 Kabupaten Gorontalo | Belajar Medan Magnet & Induksi Elektromagnetik 🌟</span>
+        </div>
+
+        <div class="nav-bar" id="mainNav">
+            <button class="nav-btn active" onclick="switchTab('materi')">📚 Materi</button>
+            <button class="nav-btn" onclick="switchTab('simulasi')">⚙️ Simulasi</button>
+            <button class="nav-btn" onclick="switchTab('kuis')">📝 Kuis</button>
+            <button class="nav-btn" onclick="switchTab('asesmen')">📋 Asesmen</button>
+            
+            <!-- Tempat menampilkan nama murid -->
+            <div id="userInfoDisplay" style="display: none; align-items: center; justify-content: center; padding: 10px 15px; background: #e0f2fe; border-radius: 8px; color: var(--secondary); font-weight: bold; font-size: 0.95rem; border: 1px solid #bae6fd; flex: 1 1 auto; min-width: max-content;">
+                <!-- Info Murid Akan Muncul Disini -->
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div id="cover" class="section active cover-page">
+                <h1 class="cover-title">Eksplorasi Medan Magnet & Kaidah Tangan Kanan</h1>
+                <p class="cover-subtitle">Fisika Kelas XII - Fase F</p>
+                
+                <div class="profile-card" style="margin-bottom: 20px; padding: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="profile-img" style="width: 70px; height: 70px; margin: 0;">
+                            <img src="https://iili.io/nhT4oYu.md.jpg" alt="Foto Profil Deisy Regina Ibrahim" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        </div>
+                        <div style="text-align: left;">
+                            <h3 style="margin: 0 0 5px 0; font-size: 1rem;">Pengembang Media</h3>
+                            <p style="font-weight: bold; color: var(--text-main); margin-bottom: 2px; font-size: 0.95rem;">Deisy Regina Ibrahim, M.Pd</p>
+                            <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 0;">MAN 2 Kabupaten Gorontalo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Login Murid -->
+                <div class="login-box" id="loginBox">
+                    <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 20px; border-bottom: 2px dashed #e5e7eb; padding-bottom: 10px;">Sesi Pembelajaran Murid</h3>
+                    
+                    <div class="input-group">
+                        <label for="studentName">Nama Lengkap:</label>
+                        <input type="text" id="studentName" class="form-input" placeholder="Masukkan nama Anda..." autocomplete="off">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="studentClass">Kelas:</label>
+                        <select id="studentClass" class="form-select">
+                            <option value="XII A">XII A</option>
+                            <option value="XII B">XII B</option>
+                            <option value="XII C">XII C</option>
+                            <option value="XII D">XII D</option>
+                            <option value="XII MIPA 1">XII MIPA 1</option>
+                            <option value="XII IPS 1">XII IPS 1</option>
+                        </select>
+                    </div>
+                    
+                    <div class="login-error" id="loginError">⚠️ Harap masukkan nama Anda terlebih dahulu!</div>
+                    
+                    <button class="btn-start" style="width: 100%; margin-top: 10px; border-radius: 8px;" onclick="loginAndStart()">Mulai Belajar 🚀</button>
+                </div>
+            </div>
+
+            <div id="materi" class="section">
+                <h2>1. Konteks Lokal: Kompas Nelayan Danau Limboto</h2>
+                <div class="context-box">
+                    <p>Saat malam hari yang gelap, bagaimana nelayan di Danau Limboto bisa mengetahui arah pulang tanpa bantuan bintang atau GPS? Mereka menggunakan <strong>Kompas</strong>.</p>
+                    <p>Jarum kompas selalu menunjuk ke arah utara dan selatan karena Bumi kita sejatinya adalah magnet raksasa. Interaksi antara jarum kompas dan medan magnet bumi inilah yang membantu navigasi sejak zaman dahulu.</p>
+                </div>
+                
+                <!-- Animasi 1: Kompas Bergerak -->
+                <div class="materi-illustration">
+                    <svg viewBox="0 0 100 100" width="120" height="120">
+                        <circle cx="50" cy="50" r="45" fill="#e2e8f0" stroke="#94a3b8" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="35" fill="#fff" />
+                        <text x="50" y="22" font-size="12" font-family="sans-serif" text-anchor="middle" fill="#64748b" font-weight="bold">U</text>
+                        <text x="50" y="86" font-size="12" font-family="sans-serif" text-anchor="middle" fill="#64748b" font-weight="bold">S</text>
+                        <g class="compass-needle">
+                            <polygon points="45,50 50,25 55,50" fill="#ef4444" />
+                            <polygon points="45,50 50,75 55,50" fill="#3b82f6" />
+                            <circle cx="50" cy="50" r="4" fill="#1f2937" />
+                        </g>
+                    </svg>
+                </div>
+
+                <h2>2. Garis-Garis Gaya Magnet</h2>
+                <p>Medan magnet dapat divisualisasikan dengan <strong>garis-garis gaya magnet</strong>. Sifat-sifat dari garis gaya magnet adalah:</p>
+                <ul>
+                    <li>Garis gaya magnet selalu memancar keluar dari <strong>Kutub Utara (U)</strong> dan masuk menuju <strong>Kutub Selatan (S)</strong> pada bagian luar magnet.</li>
+                    <li>Garis-garis ini tidak pernah saling berpotongan satu sama lain.</li>
+                    <li>Daerah dengan garis gaya yang rapat (misalnya di area kutub) menunjukkan kuatnya medan magnet di daerah tersebut.</li>
+                </ul>
+
+                <!-- Animasi 2: Aliran Garis Gaya Magnet -->
+                <div class="materi-illustration">
+                    <svg viewBox="0 0 200 120" width="250" height="150">
+                        <!-- Garis Gaya (Mulai dari X:120/Kanan, Menuju X:80/Kiri) -->
+                        <path d="M 120 60 C 140 10, 60 10, 80 60" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" class="field-flow" />
+                        <path d="M 120 60 C 140 110, 60 110, 80 60" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" class="field-flow" />
+                        <path d="M 130 60 C 170 -10, 30 -10, 70 60" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" class="field-flow" />
+                        <path d="M 130 60 C 170 130, 30 130, 70 60" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,4" class="field-flow" />
+                        
+                        <!-- Magnet Batang -->
+                        <rect x="60" y="45" width="40" height="30" fill="#2563eb" /> <!-- Selatan -->
+                        <rect x="100" y="45" width="40" height="30" fill="#ef4444" /> <!-- Utara -->
+                        <text x="80" y="65" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">S</text>
+                        <text x="120" y="65" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">U</text>
+                    </svg>
+                </div>
+
+                <h2>3. Hukum Oersted & Kaidah Tangan Kanan</h2>
+                <p>Hans Christian Oersted menemukan fenomena ajaib: <strong>kawat yang dialiri arus listrik (I) secara otomatis akan menghasilkan medan magnet (B) yang melingkar di sekitarnya</strong>. Untuk menentukan arah putaran medan magnet tersebut, kita menggunakan metode <strong>Kaidah Tangan Kanan</strong>:</p>
+                <div style="background: #fefce8; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 15px;">
+                    <strong>Mari Praktekkan Kaidah Tangan Kanan:</strong><br>
+                    Genggamlah kawat (seolah-olah) di depan Anda dengan tangan kanan.<br>
+                    👍 <strong>Ibu Jari:</strong> Menunjukkan arah mengalirnya Arus Listrik (I).<br>
+                    ✊ <strong>Empat Jari Melingkar:</strong> Menunjukkan arah putaran garis gaya Medan Magnet (B).
+                </div>
+                <p>Simbol penulisan khusus pada penampang 2D (bayangkan sedang menatap layar monitor):</p>
+                <ul>
+                    <li><strong>Tanda Titik / Dot (⊙)</strong>: Arah arus mendekati Anda, seakan keluar dari dalam layar (Ibu jari ke arah Anda). Medan magnet berputar <strong>berlawanan arah jarum jam</strong>.</li>
+                    <li><strong>Tanda Silang / Cross (⊗)</strong>: Arah arus menjauhi Anda, seakan masuk menembus layar (Ibu jari ke arah layar). Medan magnet berputar <strong>searah jarum jam</strong>.</li>
+                </ul>
+                
+                <!-- Animasi 3: Kaidah Tangan Kanan (Penampang Kawat Dot) -->
+                <div class="materi-illustration">
+                    <svg viewBox="0 0 150 150" width="140" height="140">
+                        <!-- Medan Magnet Putar Berlawanan Arah Jarum Jam -->
+                        <g class="rotating-field">
+                            <circle cx="75" cy="75" r="45" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="10,10" />
+                            <!-- Panah Arah -->
+                            <polygon points="75,25 65,30 75,35" fill="#3b82f6" />
+                            <polygon points="75,125 85,120 75,115" fill="#3b82f6" />
+                            <polygon points="25,75 30,85 35,75" fill="#3b82f6" />
+                            <polygon points="125,75 120,65 115,75" fill="#3b82f6" />
+                        </g>
+                        <!-- Kawat berarus keluar bidang (Dot) -->
+                        <circle cx="75" cy="75" r="15" fill="#d97706" stroke="#b45309" stroke-width="2"/>
+                        <circle cx="75" cy="75" r="4" fill="#fff" /> 
+                        <text x="75" y="75" dy="-25" text-anchor="middle" font-size="12" font-weight="bold" fill="#d97706">Arus (⊙)</text>
+                    </svg>
+                </div>
+            </div>
+
+            <div id="simulasi" class="section">
+                <h2>Simulasi 1: Garis Gaya Magnet Batang</h2>
+                <p>Medan magnet itu kasat mata (abstrak). Mari kita visualisasikan! <strong>Geser/Tarik (Drag) kompas kuning</strong> di sekitar magnet batang untuk melihat arah putaran garis gaya magnet. Kutub Utara kompas (Merah) akan selalu mengikuti arah garis gaya.</p>
+                
+                <div class="sim-container">
+                    <div class="magnet-canvas-container">
+                        <canvas id="magnetCanvas" width="600" height="300"></canvas>
+                    </div>
+                    <div class="control-panel">
+                        <button class="nav-btn active" style="width: 100%; background-color: var(--secondary); color: white;" onclick="toggleFieldLines()" id="btnToggleLines">Sembunyikan Pola Garis Gaya</button>
+                        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 10px;">*Kutub Utara (U/Merah), Kutub Selatan (S/Biru). Garis gaya magnet keluar dari Kutub Utara menuju Kutub Selatan.</p>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 40px;">Simulasi 2: Kaidah Tangan Kanan (Kawat Lurus)</h2>
+                <p>Geser <em>slider</em> untuk mengubah arah dan besar arus listrik pada kawat (dilihat dari atas). Amati penampang kawat di tengah dan arah jarum kompas di sekitarnya (Warna Merah = Kutub Utara kompas).</p>
+                
+                <div class="sim-container">
+                    <div class="sim-canvas-area" id="simCanvas">
+                        <!-- Garis gaya magnet -->
+                        <div class="magnetic-field-circle" id="fieldCircle1" style="width: 140px; height: 140px;"></div>
+                        <div class="magnetic-field-circle" id="fieldCircle2" style="width: 240px; height: 240px;"></div>
+                        
+                        <!-- Kawat berarus dilihat dari atas -->
+                        <div class="wire-center" id="wire"></div>
+                        
+                        <!-- Jarum Kompas -->
+                        <div class="compass" id="comp-0" style="top: 40px; left: calc(50% - 6px);"></div>
+                        <div class="compass" id="comp-1" style="top: calc(50% - 25px); left: calc(50% + 60px);"></div>
+                        <div class="compass" id="comp-2" style="bottom: 40px; left: calc(50% - 6px);"></div>
+                        <div class="compass" id="comp-3" style="top: calc(50% - 25px); left: calc(50% - 70px);"></div>
+                    </div>
+
+                    <div class="control-panel">
+                        <label for="currentSlider" style="font-weight: bold; color: var(--text-main);">Arah & Besar Arus Listrik (I)</label>
+                        <div class="slider-container">
+                            <input type="range" id="currentSlider" min="-10" max="10" value="0">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: var(--text-light); font-size: 0.9rem;">
+                            <span>Masuk Bidang (⊗)</span>
+                            <span id="currentValue" style="font-weight:bold; color:var(--primary);">0 A (Mati)</span>
+                            <span>Keluar Bidang (⊙)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-box" id="simFeedback">
+                    Kawat belum dialiri arus listrik (I = 0). Tidak ada medan magnet yang dihasilkan.
+                </div>
+            </div>
+
+            <div id="kuis" class="section">
+                <h2>Petualangan Ekspedisi Danau Limboto</h2>
+                <p>Uji pemahamanmu dalam misi navigasi menyusuri 5 pos di pesisir Danau Limboto. Pastikan audio menyala untuk mendengar penanda jawaban!</p>
+
+                <div class="adventure-map-container" id="adventureMapContainer">
+                    <!-- Inline SVG: Gambar Pemandangan Danau Limboto -->
+                    <svg class="map-bg-svg" preserveAspectRatio="none" viewBox="0 0 800 200">
+                        <defs>
+                            <linearGradient id="hill1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#0f766e" />
+                                <stop offset="100%" stop-color="#064e3b" />
+                            </linearGradient>
+                            <linearGradient id="hill2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#047857" />
+                                <stop offset="100%" stop-color="#022c22" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Matahari -->
+                        <circle cx="700" cy="50" r="25" fill="#fef08a" opacity="0.9"/>
+                        <!-- Barisan Bukit / Pegunungan -->
+                        <path d="M-50,150 L150,50 L350,150 Z" fill="url(#hill2)" opacity="0.8"/>
+                        <path d="M200,160 L450,60 L750,160 Z" fill="url(#hill1)" opacity="0.7"/>
+                        <path d="M600,150 L750,90 L900,150 Z" fill="url(#hill2)" opacity="0.8"/>
+                        <!-- Permukaan Air Gelap -->
+                        <rect x="0" y="145" width="100%" height="60" fill="#0369a1" opacity="0.6"/>
+                        <!-- Riak Air Danau -->
+                        <path d="M100,165 Q120,155 140,165 T180,165" fill="none" stroke="#7dd3fc" stroke-width="2" opacity="0.6"/>
+                        <path d="M400,175 Q420,165 440,175 T480,175" fill="none" stroke="#7dd3fc" stroke-width="2" opacity="0.6"/>
+                        <path d="M650,155 Q670,145 690,155 T730,155" fill="none" stroke="#7dd3fc" stroke-width="2" opacity="0.6"/>
+                    </svg>
+
+                    <div class="adventure-map" id="adventureMap">
+                        <!-- Garis Lintasan Zigzag SVG -->
+                        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;" preserveAspectRatio="none" viewBox="0 0 100 100">
+                            <!-- Koordinat disesuaikan dengan posisi left & top dari masing-masing node -->
+                            <path d="M 10 75 L 30 25 L 50 75 L 70 25 L 90 75" fill="none" stroke="rgba(255, 255, 255, 0.8)" stroke-width="3" stroke-dasharray="4,6" vector-effect="non-scaling-stroke" />
+                        </svg>
+                        <div class="map-node active" id="node-0">1</div>
+                        <div class="map-node" id="node-1">2</div>
+                        <div class="map-node" id="node-2">3</div>
+                        <div class="map-node" id="node-3">4</div>
+                        <div class="map-node" id="node-4">5</div>
+                    </div>
+                    <div class="signboard" id="posName">
+                        <span class="pos-code-badge">LBT-ALPHA</span> 📍 Pos 1: Dermaga Keberangkatan
+                    </div>
+                </div>
+
+                <div class="quiz-container" id="quizArea">
+                    <!-- Questions will be injected here via JS -->
+                </div>
+
+                <div class="quiz-nav">
+                    <button class="btn-action" id="btnNextQuiz" onclick="nextQuestion()">Melaju ke Pos Berikutnya 🚤</button>
+                </div>
+
+                <!-- Score Board & Podium -->
+                <div class="score-board" id="scoreBoard">
+                    <h2>Hasil Ekspedisi Navigasi</h2>
+                    <div class="score-circle" id="finalScore" style="display: none;">100</div>
+                    
+                    <div class="podium-container" id="podiumArea">
+                        <div class="podium-step podium-2" id="rank2">
+                            <div class="podium-avatar" id="avatar2">🧑‍🎓</div>
+                            <div class="rank-label">2</div>
+                            <div class="score-label">80 Poin</div>
+                        </div>
+                        <div class="podium-step podium-1" id="rank1">
+                            <div class="podium-avatar winner-jump" id="avatar1">🏆</div>
+                            <div class="rank-label">1</div>
+                            <div class="score-label" id="firstPlaceScore">100 Poin</div>
+                        </div>
+                        <div class="podium-step podium-3" id="rank3">
+                            <div class="podium-avatar" id="avatar3">🏃‍♂️</div>
+                            <div class="rank-label">3</div>
+                            <div class="score-label">60 Poin</div>
+                        </div>
+                    </div>
+
+                    <p id="scoreMessage" style="font-size: 1.2rem; font-weight: bold; margin-top: 40px;"></p>
+                    <button class="btn-start" style="margin-top: 20px;" onclick="resetQuiz()">Ulangi Ekspedisi 🔄</button>
+                </div>
+            </div>
+
+            <!-- TAB ASESMEN SUMATIF -->
+            <div id="asesmen" class="section">
+                <h2>Asesmen Sumatif: Medan Magnet & Induksi Elektromagnetik</h2>
+                <p>Kerjakan asesmen akhir ini secara mandiri. Bagian Pilihan Ganda (PG) akan dinilai otomatis oleh sistem (Total 60 Poin). Bagian Uraian/Essay (Total 40 Poin) dapat dinilai silang menggunakan Rubrik Penilaian yang muncul setelah hasil dikumpulkan.</p>
+
+                <div class="asesmen-container">
+                    <div class="asesmen-header">
+                        <h3 style="color:white; margin:0;">Bagian I: Pilihan Ganda (6 Soal)</h3>
+                        <p style="margin:5px 0 0 0; font-size:0.9rem;">Pilih satu jawaban yang paling tepat.</p>
+                    </div>
+
+                    <form id="asesmenForm">
+                        <!-- PG 1 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 1</span>
+                            <p>Sifat arah garis gaya magnet di luar magnet batang yang benar adalah...</p>
+                            <div class="pg-options" id="opt-pg-1">
+                                <label><input type="radio" name="pg1" value="A"> A. Keluar dari Kutub Selatan menuju Kutub Utara</label>
+                                <label><input type="radio" name="pg1" value="B"> B. Keluar dari Kutub Utara menuju Kutub Selatan</label>
+                                <label><input type="radio" name="pg1" value="C"> C. Bergerak lurus dari kutub yang satu menjauhi magnet</label>
+                                <label><input type="radio" name="pg1" value="D"> D. Berpotongan di titik tengah magnet (ekuator)</label>
+                                <label><input type="radio" name="pg1" value="E"> E. Mengelilingi magnet secara acak tanpa pola</label>
+                            </div>
+                        </div>
+
+                        <!-- PG 2 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 2</span>
+                            <p>Sebuah kawat lurus membentang vertikal dan dialiri arus listrik dari bawah ke atas. Sesuai Kaidah Tangan Kanan, bagaimanakah arah medan magnet di titik yang berada tepat di sebelah timur (kanan) kawat tersebut?</p>
+                            <div class="pg-options" id="opt-pg-2">
+                                <label><input type="radio" name="pg2" value="A"> A. Masuk menembus bidang (Cross ⊗)</label>
+                                <label><input type="radio" name="pg2" value="B"> B. Keluar mendekati pengamat (Dot ⊙)</label>
+                                <label><input type="radio" name="pg2" value="C"> C. Lurus ke arah Utara (atas)</label>
+                                <label><input type="radio" name="pg2" value="D"> D. Lurus ke arah Selatan (bawah)</label>
+                                <label><input type="radio" name="pg2" value="E"> E. Medan magnet di titik tersebut bernilai nol</label>
+                            </div>
+                        </div>
+
+                        <!-- PG 3 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 3</span>
+                            <p>Saat menavigasi perahu di malam hari di Danau Limboto, nelayan mengandalkan kompas. Jarum kompas selalu menunjuk ke arah utara geografis Bumi karena...</p>
+                            <div class="pg-options" id="opt-pg-3">
+                                <label><input type="radio" name="pg3" value="A"> A. Terdapat bongkahan besi raksasa di kutub utara Bumi</label>
+                                <label><input type="radio" name="pg3" value="B"> B. Kutub Selatan magnetik Bumi berada di sekitar kutub utara geografis Bumi</label>
+                                <label><input type="radio" name="pg3" value="C"> C. Kutub Utara magnetik Bumi menarik Kutub Utara jarum kompas</label>
+                                <label><input type="radio" name="pg3" value="D"> D. Adanya angin darat dan angin laut yang stabil</label>
+                                <label><input type="radio" name="pg3" value="E"> E. Tarikan gravitasi bulan paling kuat di arah utara</label>
+                            </div>
+                        </div>
+
+                        <!-- PG 4 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 4</span>
+                            <p>Pada suatu rangkaian listrik, terlihat simbol kawat lurus dengan tanda <b>(⊙) / Dot</b> di tengahnya. Simbol ini memberikan informasi bahwa...</p>
+                            <div class="pg-options" id="opt-pg-4">
+                                <label><input type="radio" name="pg4" value="A"> A. Arus listrik bernilai nol</label>
+                                <label><input type="radio" name="pg4" value="B"> B. Arus listrik mengalir masuk menjauhi pengamat</label>
+                                <label><input type="radio" name="pg4" value="C"> C. Arus listrik mengalir keluar mendekati pengamat</label>
+                                <label><input type="radio" name="pg4" value="D"> D. Terdapat kerusakan pada kawat tersebut</label>
+                                <label><input type="radio" name="pg4" value="E"> E. Kawat tersebut merupakan sumber tegangan</label>
+                            </div>
+                        </div>
+
+                        <!-- PG 5 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 5</span>
+                            <p>Sesuai Hukum Biot-Savart / Oersted, besar induksi magnet (medan magnet) di sekitar kawat lurus berarus berbanding lurus dengan...</p>
+                            <div class="pg-options" id="opt-pg-5">
+                                <label><input type="radio" name="pg5" value="A"> A. Jarak titik ke kawat</label>
+                                <label><input type="radio" name="pg5" value="B"> B. Kuat arus listrik yang mengalir</label>
+                                <label><input type="radio" name="pg5" value="C"> C. Waktu aliran arus</label>
+                                <label><input type="radio" name="pg5" value="D"> D. Massa jenis kawat</label>
+                                <label><input type="radio" name="pg5" value="E"> E. Kuadrat arus listrik</label>
+                            </div>
+                        </div>
+
+                        <!-- PG 6 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 6</span>
+                            <p>Banyak perahu ketinting / motor tempel di Danau Limboto yang businya menyala karena sistem pengapian. Alat yang memanfaatkan perubahan fluks medan magnet untuk menghasilkan arus listrik searah/bolak-balik (induksi elektromagnetik) disebut...</p>
+                            <div class="pg-options" id="opt-pg-6">
+                                <label><input type="radio" name="pg6" value="A"> A. Transformator (Trafo)</label>
+                                <label><input type="radio" name="pg6" value="B"> B. Motor Listrik</label>
+                                <label><input type="radio" name="pg6" value="C"> C. Resistor</label>
+                                <label><input type="radio" name="pg6" value="D"> D. Generator / Dinamo</label>
+                                <label><input type="radio" name="pg6" value="E"> E. Kapasitor</label>
+                            </div>
+                        </div>
+
+                        <div class="asesmen-header" style="background: linear-gradient(135deg, var(--secondary) 0%, #38bdf8 100%); margin-top: 40px;">
+                            <h3 style="color:white; margin:0;">Bagian II: Uraian / Essay (4 Soal)</h3>
+                            <p style="margin:5px 0 0 0; font-size:0.9rem;">Jelaskan jawaban Anda dengan alur logika Fisika yang tepat.</p>
+                        </div>
+
+                        <!-- Essay 1 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 7</span>
+                            <p>Mengapa garis-garis gaya magnet tidak pernah saling berpotongan? Apa yang akan terjadi pada jarum kompas jika garis gaya magnet di suatu titik saling berpotongan?</p>
+                            <textarea class="essay-input" placeholder="Tuliskan jawaban Anda di sini..."></textarea>
+                        </div>
+
+                        <!-- Essay 2 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 8</span>
+                            <p>Sebuah kabel transmisi listrik PLN membentang lurus horizontal dari arah Timur ke Barat. Jika arus listrik dialirkan ke arah <b>Barat</b>, tentukan arah putaran medan magnet tepat di <b>bawah</b> kabel tersebut! (Gunakan dan jelaskan dengan Kaidah Tangan Kanan).</p>
+                            <textarea class="essay-input" placeholder="Tuliskan jawaban Anda di sini..."></textarea>
+                        </div>
+
+                        <!-- Essay 3 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 9</span>
+                            <p>Burung migran dan penyu sering berenang/terbang dalam jarak jauh tanpa tersesat, serupa dengan nelayan yang menggunakan kompas. Jelaskan secara singkat fenomena bio-magnetik apa yang mereka manfaatkan yang berkaitan dengan materi kemagnetan Bumi!</p>
+                            <textarea class="essay-input" placeholder="Tuliskan jawaban Anda di sini..."></textarea>
+                        </div>
+
+                        <!-- Essay 4 -->
+                        <div class="question-item">
+                            <span class="question-number">Soal 10</span>
+                            <p>Motor listrik dan Generator memiliki prinsip kerja yang saling berkebalikan meskipun komponen utamanya (magnet dan kumparan) sama. Jelaskan perbedaan prinsip perubahan energi antara kedua alat tersebut!</p>
+                            <textarea class="essay-input" placeholder="Tuliskan jawaban Anda di sini..."></textarea>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button type="button" class="btn-start" id="btnSubmitAsesmen" onclick="evaluateAsesmen()" style="padding: 15px 50px;">Kumpulkan & Lihat Hasil 📝</button>
+                        </div>
+                    </form>
+
+                    <!-- Tempat Tampil Hasil & Rubrik -->
+                    <div id="asesmenResult" class="rubrik-box">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: var(--primary); margin: 0; font-size: 2rem;" id="skorPG">Skor PG: 0 / 60</h2>
+                            <p style="color: var(--text-light); margin-top: 5px;">*Bagian Essay (Maks 40 Poin) silakan dievaluasi mandiri/oleh guru menggunakan rubrik di bawah ini.</p>
+                        </div>
+                        
+                        <h3 style="border-bottom: 2px solid var(--success); padding-bottom: 10px;">Kunci & Rubrik Penilaian Essay</h3>
+                        
+                        <div class="rubrik-item">
+                            <strong>Soal 7 (Garis Gaya tidak berpotongan):</strong><br>
+                            <em>Kunci:</em> Garis gaya menunjukkan arah resultan gaya magnetik pada titik tersebut. Jika berpotongan, maka di satu titik ada dua arah gaya yang berbeda. Hal ini mustahil, karena jarum kompas tidak bisa menunjuk ke dua arah sekaligus. (Skor Maks: 10)
+                        </div>
+                        <div class="rubrik-item">
+                            <strong>Soal 8 (Kaidah Tangan Kanan):</strong><br>
+                            <em>Kunci:</em> Menggunakan kaidah tangan kanan: Ibu jari menunjuk ke Barat. Empat jari yang melingkar menunjuk ke arah <b>Utara</b> ketika berada tepat di bagian bawah kawat. (Skor Maks: 10)
+                        </div>
+                        <div class="rubrik-item">
+                            <strong>Soal 9 (Navigasi Hewan):</strong><br>
+                            <em>Kunci:</em> Hewan-hewan tersebut memiliki biomagnetite (mineral magnetik alami) di dalam tubuh mereka yang berfungsi sebagai reseptor magnetik. Reseptor ini sejajar dengan garis gaya medan magnet Bumi, bertindak persis seperti kompas alami. (Skor Maks: 10)
+                        </div>
+                        <div class="rubrik-item">
+                            <strong>Soal 10 (Motor vs Generator):</strong><br>
+                            <em>Kunci:</em> Motor listrik mengubah energi Listrik menjadi energi Mekanik (Gerak), sedangkan Generator / Dinamo mengubah energi Mekanik (Gerak dari baling-baling/mesin) menjadi energi Listrik melalui prinsip induksi elektromagnetik. (Skor Maks: 10)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- Navigation Logic ---
+        let studentData = { name: "", class: "" };
+
+        function loginAndStart() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const classInput = document.getElementById('studentClass').value;
+            const errorMsg = document.getElementById('loginError');
+
+            // Validasi Input
+            if (!nameInput) {
+                errorMsg.style.display = 'block';
+                document.getElementById('studentName').style.borderColor = 'var(--danger)';
+                return;
+            }
+
+            // Simpan data murid
+            studentData.name = nameInput;
+            studentData.class = classInput;
+
+            // Reset error (jika sebelumnya ada)
+            errorMsg.style.display = 'none';
+            document.getElementById('studentName').style.borderColor = '#e5e7eb';
+
+            // Tampilkan identitas di navigasi atas
+            const userInfoDisplay = document.getElementById('userInfoDisplay');
+            userInfoDisplay.innerHTML = `👤 ${studentData.name} | Kelas: ${studentData.class}`;
+            userInfoDisplay.style.display = 'flex';
+
+            // Jalankan fungsi start utama
+            startApp();
+        }
+
+        function startApp() {
+            document.getElementById('cover').classList.remove('active');
+            document.getElementById('mainNav').style.display = 'flex';
+            
+            // Inisialisasi Audio Context Tone.js saat user berinteraksi
+            if (Tone.context.state !== 'running') {
+                Tone.start();
+            }
+            
+            switchTab('materi');
+        }
+
+        function switchTab(tabId) {
+            // Update buttons
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Update sections
+            const sections = document.querySelectorAll('.section:not(.cover-page)');
+            sections.forEach(sec => sec.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // --- Simulasi Medan Magnet Logic ---
+        const slider = document.getElementById('currentSlider');
+        const wire = document.getElementById('wire');
+        const currentValueDisplay = document.getElementById('currentValue');
+        const simFeedback = document.getElementById('simFeedback');
+        const fieldCircles = document.querySelectorAll('.magnetic-field-circle');
+        const compasses = document.querySelectorAll('.compass');
+
+        function updateSimulation() {
+            const current = parseInt(slider.value);
+            
+            if (current === 0) {
+                currentValueDisplay.textContent = `0 A (Mati)`;
+                wire.innerHTML = "";
+                wire.style.backgroundColor = "#9ca3af"; // Gray
+                wire.style.borderColor = "#6b7280";
+                
+                fieldCircles.forEach(circle => circle.style.opacity = '0');
+                compasses.forEach(compass => compass.style.opacity = '0');
+                
+                simFeedback.innerHTML = "Arus Listrik 0 Ampere. Kawat tidak menghasilkan medan magnet, jarum kompas diam dan tidak terpengaruh.";
+                simFeedback.style.backgroundColor = "#fef3c7";
+            } else if (current > 0) {
+                // Arus Keluar (Dot) -> B Berlawanan Arah Jarum Jam
+                currentValueDisplay.textContent = `+${current} A (Keluar Layar / Dot ⊙)`;
+                wire.innerHTML = "•";
+                wire.style.backgroundColor = "#d97706";
+                wire.style.borderColor = "#b45309";
+                
+                fieldCircles.forEach(circle => {
+                    circle.style.opacity = current / 10; 
+                    circle.style.borderWidth = `${1 + (current/5)}px`;
+                });
+                
+                compasses.forEach((compass, index) => {
+                    compass.style.opacity = '1';
+                    // CCW logic:
+                    let rotation = 0;
+                    if(index === 0) rotation = -90; // Top compass points Left
+                    if(index === 1) rotation = 0;   // Right compass points Up
+                    if(index === 2) rotation = 90;  // Bottom compass points Right
+                    if(index === 3) rotation = 180; // Left compass points Down
+                    compass.style.transform = `rotate(${rotation}deg)`;
+                });
+
+                simFeedback.innerHTML = "<strong>Arus Keluar Menuju Pengamat (Dot ⊙):</strong><br>Sesuai Kaidah Tangan Kanan (arahkan ibu jari ke wajahmu), 4 jari terlipat <strong>berlawanan arah jarum jam</strong>. Kompas bergerak mengikuti arah melingkar medan magnet tersebut.";
+                simFeedback.style.backgroundColor = "#dcfce7";
+            } else {
+                // Arus Masuk (Cross) -> B Searah Jarum Jam
+                currentValueDisplay.textContent = `${current} A (Masuk Layar / Cross ⊗)`;
+                wire.innerHTML = "×";
+                wire.style.backgroundColor = "#2563eb"; // Blue
+                wire.style.borderColor = "#1d4ed8";
+                
+                fieldCircles.forEach(circle => {
+                    circle.style.opacity = Math.abs(current) / 10;
+                    circle.style.borderWidth = `${1 + (Math.abs(current)/5)}px`;
+                });
+                
+                compasses.forEach((compass, index) => {
+                    compass.style.opacity = '1';
+                    // CW logic:
+                    let rotation = 0;
+                    if(index === 0) rotation = 90;  // Top compass points Right
+                    if(index === 1) rotation = 180; // Right compass points Down
+                    if(index === 2) rotation = -90; // Bottom compass points Left
+                    if(index === 3) rotation = 0;   // Left compass points Up
+                    compass.style.transform = `rotate(${rotation}deg)`;
+                });
+
+                simFeedback.innerHTML = "<strong>Arus Masuk Menjauhi Pengamat (Cross ⊗):</strong><br>Sesuai Kaidah Tangan Kanan (arahkan ibu jari menembus layar), 4 jari terlipat <strong>searah jarum jam</strong>. Kompas mengikuti arah putaran medan magnet tersebut.";
+                simFeedback.style.backgroundColor = "#e0f2fe";
+            }
+        }
+
+        slider.addEventListener('input', updateSimulation);
+        updateSimulation(); // Set initial state pada saat halaman dimuat
+
+        // --- Simulasi Magnet Batang Logic (CANVAS) ---
+        const canvas = document.getElementById('magnetCanvas');
+        const ctx = canvas.getContext('2d');
+        let showLines = true;
+        let compassPos = { x: 300, y: 70 };
+        let isDragging = false;
+        
+        // Properti Magnet
+        const magW = 160;
+        const magH = 40;
+        const cx = 300; // titik tengah X canvas
+        const cy = 150; // titik tengah Y canvas
+        const magRect = { x: cx - magW/2, y: cy - magH/2, w: magW, h: magH };
+        const poleN = { x: cx + magW/2 - 15, y: cy }; // Posisi efektif Kutub U (Kanan)
+        const poleS = { x: cx - magW/2 + 15, y: cy }; // Posisi efektif Kutub S (Kiri)
+
+        // Rumus pendekatan medan dipol magnetik
+        function getBField(x, y) {
+            const dxN = x - poleN.x; const dyN = y - poleN.y;
+            const rN2 = dxN*dxN + dyN*dyN;
+            const rN = Math.sqrt(rN2) || 1;
+            
+            const dxS = x - poleS.x; const dyS = y - poleS.y;
+            const rS2 = dxS*dxS + dyS*dyS;
+            const rS = Math.sqrt(rS2) || 1;
+
+            const scale = 8000;
+            // Vektor arah menjauhi Utara
+            const BxN = scale * dxN / (rN2 * rN);
+            const ByN = scale * dyN / (rN2 * rN);
+            
+            // Vektor arah mendekati Selatan
+            const BxS = -scale * dxS / (rS2 * rS);
+            const ByS = -scale * dyS / (rS2 * rS);
+
+            return { x: BxN + BxS, y: ByN + ByS };
+        }
+
+        function drawMagnet() {
+            // Gambar Kutub Selatan (Biru)
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(magRect.x, magRect.y, magRect.w/2, magRect.h);
+            // Gambar Kutub Utara (Merah)
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(magRect.x + magRect.w/2, magRect.y, magRect.w/2, magRect.h);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('S', magRect.x + magRect.w/4, magRect.y + magRect.h/2);
+            ctx.fillText('U', magRect.x + 3*magRect.w/4, magRect.y + magRect.h/2);
+        }
+
+        function drawFieldLines() {
+            if (!showLines) return;
+            ctx.lineWidth = 1.5;
+            const spacing = 25; // Jarak antar panah serbuk besi
+            for (let x = spacing/2; x < canvas.width; x += spacing) {
+                for (let y = spacing/2; y < canvas.height; y += spacing) {
+                    // Jangan gambar di dalam area magnet
+                    if (x > magRect.x && x < magRect.x + magRect.w && y > magRect.y && y < magRect.y + magRect.h) continue;
+                    
+                    const B = getBField(x, y);
+                    const angle = Math.atan2(B.y, B.x);
+                    const mag = Math.sqrt(B.x*B.x + B.y*B.y);
+                    const alpha = Math.min(1, mag * 2); // Transparansi untuk garis yang jauh
+                    if (alpha < 0.1) continue;
+
+                    ctx.strokeStyle = `rgba(156, 163, 175, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.moveTo(x - Math.cos(angle)*8, y - Math.sin(angle)*8);
+                    ctx.lineTo(x + Math.cos(angle)*8, y + Math.sin(angle)*8);
+                    ctx.stroke();
+
+                    // Kepala Panah
+                    ctx.beginPath();
+                    ctx.moveTo(x + Math.cos(angle)*8, y + Math.sin(angle)*8);
+                    ctx.lineTo(x + Math.cos(angle + 2.5)*4, y + Math.sin(angle + 2.5)*4);
+                    ctx.lineTo(x + Math.cos(angle - 2.5)*4, y + Math.sin(angle - 2.5)*4);
+                    ctx.fillStyle = `rgba(156, 163, 175, ${alpha})`;
+                    ctx.fill();
+                }
+            }
+        }
+
+        function drawInteractiveCompass() {
+            const x = compassPos.x;
+            const y = compassPos.y;
+            const radius = 22;
+            
+            // Casing Kompas
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI*2);
+            ctx.fillStyle = '#fde047'; 
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#ca8a04';
+            ctx.stroke();
+            
+            // Latar dalam kompas
+            ctx.beginPath();
+            ctx.arc(x, y, radius - 4, 0, Math.PI*2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            const B = getBField(x, y);
+            const angle = Math.atan2(B.y, B.x);
+            
+            // Jarum Kompas
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // Kutub Utara Kompas (Merah)
+            ctx.beginPath();
+            ctx.moveTo(0, -5);
+            ctx.lineTo(radius - 6, 0);
+            ctx.lineTo(0, 5);
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+            
+            // Kutub Selatan Kompas (Abu-abu)
+            ctx.beginPath();
+            ctx.moveTo(0, -5);
+            ctx.lineTo(-(radius - 6), 0);
+            ctx.lineTo(0, 5);
+            ctx.fillStyle = '#9ca3af';
+            ctx.fill();
+            
+            // Titik poros tengah
+            ctx.beginPath();
+            ctx.arc(0, 0, 3, 0, Math.PI*2);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawFieldLines();
+            drawMagnet();
+            drawInteractiveCompass();
+        }
+
+        function toggleFieldLines() {
+            showLines = !showLines;
+            const btn = document.getElementById('btnToggleLines');
+            if(showLines) {
+                btn.textContent = "Sembunyikan Pola Garis Gaya";
+                btn.style.backgroundColor = "var(--secondary)";
+            } else {
+                btn.textContent = "Tampilkan Pola Garis Gaya (Visualisasi)";
+                btn.style.backgroundColor = "var(--primary-light)";
+            }
+            renderCanvas();
+        }
+
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX = evt.clientX;
+            let clientY = evt.clientY;
+            
+            if (evt.touches && evt.touches.length > 0) {
+                clientX = evt.touches[0].clientX;
+                clientY = evt.touches[0].clientY;
+            }
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function onPointerDown(e) {
+            const pos = getMousePos(e);
+            const dx = pos.x - compassPos.x;
+            const dy = pos.y - compassPos.y;
+            // Jika diklik dalam radius kompas
+            if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                isDragging = true;
+                if(e.cancelable) e.preventDefault();
+            }
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            compassPos = getMousePos(e);
+            renderCanvas();
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function onPointerUp() { isDragging = false; }
+
+        canvas.addEventListener('mousedown', onPointerDown);
+        canvas.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+        
+        canvas.addEventListener('touchstart', onPointerDown, {passive: false});
+        canvas.addEventListener('touchmove', onPointerMove, {passive: false});
+        window.addEventListener('touchend', onPointerUp);
+
+        // Render perdana canvas
+        setTimeout(renderCanvas, 100);
+
+        // --- Quiz Logic ---
+        
+        // Inisialisasi Synthesizer untuk Sound Effects
+        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        
+        function playCorrectSound() {
+            if (Tone.context.state !== 'running') Tone.context.resume();
+            // Nada ceria (Arpeggio naik)
+            const now = Tone.now();
+            synth.triggerAttackRelease("C4", "16n", now);
+            synth.triggerAttackRelease("E4", "16n", now + 0.1);
+            synth.triggerAttackRelease("G4", "16n", now + 0.2);
+            synth.triggerAttackRelease("C5", "8n", now + 0.3);
+        }
+
+        function playWrongSound() {
+            if (Tone.context.state !== 'running') Tone.context.resume();
+            // Nada salah (Nada rendah turun)
+            const now = Tone.now();
+            synth.triggerAttackRelease("Eb3", "8n", now);
+            synth.triggerAttackRelease("C3", "4n", now + 0.2);
+        }
+
+        // Data Pos beserta Kode Rahasia Ekspedisinya
+        const posDetails = [
+            { name: "Dermaga Keberangkatan (Persiapan)", code: "LBT-ALPHA", icon: "📍" },
+            { name: "Tengah Danau (Analisis Medan)", code: "LBT-BETA", icon: "📍" },
+            { name: "Perairan Timur (Hukum Oersted)", code: "LBT-GAMMA", icon: "📍" },
+            { name: "Kampung Nelayan (Kaidah Tangan)", code: "LBT-DELTA", icon: "📍" },
+            { name: "Titik Pulang (Navigasi Bumi)", code: "LBT-OMEGA", icon: "🏁" }
+        ];
+
+        const quizData = [
+            {
+                q: "Bagaimanakah arah alami garis-garis gaya magnet pada sebuah magnet batang secara visual (di luar magnet)?",
+                options: [
+                    "Berputar tak beraturan mengelilingi pusat magnet",
+                    "Selalu keluar dari Kutub Selatan dan masuk ke Kutub Utara",
+                    "Selalu memancar keluar dari Kutub Utara dan masuk menuju Kutub Selatan",
+                    "Menyebar dan saling menyilang satu sama lain"
+                ],
+                ans: 2,
+                explanation: "Sifat alami garis gaya magnet adalah tidak pernah berpotongan, serta selalu memiliki arah keluar dari Kutub Utara (U) menuju Kutub Selatan (S)."
+            },
+            {
+                q: "Sebuah kawat penghantar lurus dialiri arus vertikal dari bawah ke atas. Jika sebuah kompas diletakkan tepat di sebelah KANAN kawat, ke manakah arah kutub utara jarum kompas tersebut akan menunjuk?",
+                options: [
+                    "Masuk menembus bidang / menjauhi pengamat (Cross)",
+                    "Keluar menembus bidang / mendekati pengamat (Dot)",
+                    "Menunjuk lurus ke arah atas sejajar kawat",
+                    "Menunjuk lurus ke arah bawah melawan arus"
+                ],
+                ans: 0,
+                explanation: "Gunakan kaidah tangan kanan: Arahkan ibu jari ke atas (arus). 4 jari Anda yang berada tepat di sisi kanan kawat secara otomatis akan menekuk masuk menembus bidang/layar (Cross)."
+            },
+            {
+                q: "Dalam penerapan Kaidah Tangan Kanan pada fenomena Oersted untuk kawat lurus berarus, apa yang diwakili oleh lipatan keempat jari?",
+                options: [
+                    "Menunjukkan arah Arus Listrik (I)",
+                    "Menunjukkan letak Kutub Utara geografis Bumi",
+                    "Menunjukkan arah putaran Medan Magnet (B)",
+                    "Menunjukkan besarnya hambatan kawat penghantar"
+                ],
+                ans: 2,
+                explanation: "Pada Kaidah Tangan Kanan untuk kawat lurus: Ibu Jari mewakili arah Arus Listrik (I), sedangkan keempat jari lainnya yang menggenggam mewakili arah putaran garis Medan Magnet (B)."
+            },
+            {
+                q: "Pada diagram penampang kawat berarus, terlihat tanda silang (⊗) di tengah kawat. Ini mengartikan bahwa...",
+                options: [
+                    "Arus listrik mendekati pengamat, medan magnet berputar berlawanan arah jarum jam",
+                    "Arus listrik menjauhi pengamat (masuk layar), medan magnet berputar searah jarum jam",
+                    "Kawat tidak memiliki arus, namun memiliki medan magnet yang stabil",
+                    "Arus ke bawah, medan magnet tegak lurus ke atas"
+                ],
+                ans: 1,
+                explanation: "Tanda silang (⊗) ibarat kita sedang melihat pangkal/ekor anak panah yang melesat menjauhi kita. Dengan ibu jari mengarah menembus layar, keempat jari akan melingkar searah putaran jarum jam."
+            },
+            {
+                q: "Nelayan di Danau Limboto secara tradisional menggunakan kompas saat berlayar di malam hari. Mengapa jarum kompas selalu konsisten menunjuk arah utara-selatan?",
+                options: [
+                    "Karena pengaruh gaya Coriolis dari rotasi pergerakan Bumi",
+                    "Adanya interaksi tarik-menarik antara kutub magnet kompas dengan medan magnet bumi",
+                    "Arus gelombang air di danau yang mempengaruhi keseimbangan jarum",
+                    "Kondisi suhu udara sekitar garis khatulistiwa yang menarik logam tertentu"
+                ],
+                ans: 1,
+                explanation: "Bumi pada dasarnya adalah magnet raksasa. Kutub Utara magnetik bumi (yang secara letak berada di geografis selatan) menarik Kutub Selatan jarum kompas. Interaksi kutub yang berbeda inilah yang memungkinkan kompas digunakan untuk navigasi."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const quizArea = document.getElementById('quizArea');
+        const btnNextQuiz = document.getElementById('btnNextQuiz');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const adventureMapContainer = document.getElementById('adventureMapContainer');
+        const posNameDisplay = document.getElementById('posName');
+
+        function initQuiz() {
+            quizArea.innerHTML = '';
+            scoreBoard.style.display = 'none';
+            adventureMapContainer.style.display = 'block';
+            btnNextQuiz.style.display = 'none';
+            score = 0;
+            currentQuestion = 0;
+            
+            // Reset Map
+            for(let i=0; i<5; i++) {
+                const node = document.getElementById(`node-${i}`);
+                node.className = 'map-node';
+                if(i===0) node.classList.add('active');
+            }
+            // Tampilkan Info Pos & Kode
+            posNameDisplay.innerHTML = `<span class="pos-code-badge">${posDetails[0].code}</span> ${posDetails[0].icon} Pos 1: ${posDetails[0].name}`;
+            
+            quizData.forEach((item, index) => {
+                const qCard = document.createElement('div');
+                qCard.className = `question-card ${index === 0 ? 'active' : ''}`;
+                qCard.id = `q-${index}`;
+
+                let optionsHTML = '';
+                item.options.forEach((opt, optIdx) => {
+                    optionsHTML += `<button class="option-btn" onclick="checkAnswer(${index}, ${optIdx}, this)">${String.fromCharCode(65+optIdx)}. ${opt}</button>`;
+                });
+
+                qCard.innerHTML = `
+                    <h3 style="color: var(--text-main); margin-bottom: 15px;">Misi Pos ${index + 1}</h3>
+                    <p style="font-size: 1.1rem; font-weight: 500;">${item.q}</p>
+                    <div class="options-grid">
+                        ${optionsHTML}
+                    </div>
+                    <div class="quiz-feedback" id="feedback-${index}"></div>
+                `;
+                quizArea.appendChild(qCard);
+            });
+            quizArea.style.display = 'block';
+        }
+
+        function checkAnswer(qIndex, optIdx, btnElement) {
+            if (answered) return; 
+            answered = true;
+
+            const correctAns = quizData[qIndex].ans;
+            const explanation = quizData[qIndex].explanation;
+            const feedbackDiv = document.getElementById(`feedback-${qIndex}`);
+            const allBtns = document.getElementById(`q-${qIndex}`).querySelectorAll('.option-btn');
+            const mapNode = document.getElementById(`node-${qIndex}`);
+
+            if (optIdx === correctAns) {
+                // Jawaban Benar
+                playCorrectSound();
+                btnElement.classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback success';
+                feedbackDiv.innerHTML = `<strong>Tepat Sekali! 🎉</strong><br>${explanation}`;
+                mapNode.classList.remove('active');
+                mapNode.classList.add('completed-correct');
+                score += 20;
+            } else {
+                // Jawaban Salah
+                playWrongSound();
+                btnElement.classList.add('wrong');
+                allBtns[correctAns].classList.add('correct');
+                feedbackDiv.className = 'quiz-feedback error';
+                feedbackDiv.innerHTML = `<strong>Kurang Tepat. 💡</strong><br>${explanation}`;
+                mapNode.classList.remove('active');
+                mapNode.classList.add('completed-wrong');
+            }
+
+            feedbackDiv.style.display = 'block';
+
+            if (currentQuestion < quizData.length - 1) {
+                btnNextQuiz.style.display = 'block';
+                btnNextQuiz.textContent = 'Melaju ke Pos Berikutnya 🚤';
+            } else {
+                btnNextQuiz.style.display = 'block';
+                btnNextQuiz.textContent = 'Tiba di Tujuan Akhir 🏆';
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById(`q-${currentQuestion}`).classList.remove('active');
+            btnNextQuiz.style.display = 'none';
+            answered = false;
+
+            currentQuestion++;
+
+            if (currentQuestion < quizData.length) {
+                document.getElementById(`q-${currentQuestion}`).classList.add('active');
+                const nextNode = document.getElementById(`node-${currentQuestion}`);
+                nextNode.classList.add('active');
+                
+                // Update Info Pos & Kode
+                posNameDisplay.innerHTML = `<span class="pos-code-badge">${posDetails[currentQuestion].code}</span> ${posDetails[currentQuestion].icon} Pos ${currentQuestion + 1}: ${posDetails[currentQuestion].name}`;
+            } else {
+                showScore();
+            }
+        }
+
+        function showScore() {
+            quizArea.style.display = 'none';
+            adventureMapContainer.style.display = 'none';
+            scoreBoard.style.display = 'block';
+            
+            const scoreMsgEl = document.getElementById('scoreMessage');
+            
+            // Konfigurasi Podium berdasarkan skor
+            const avatar1 = document.getElementById('avatar1');
+            const scoreLabel1 = document.getElementById('firstPlaceScore');
+            const rank2 = document.getElementById('rank2');
+            const rank3 = document.getElementById('rank3');
+
+            scoreLabel1.textContent = `${score} Poin`;
+
+            if (score === 100) {
+                // Juara 1 Mutlak
+                avatar1.innerHTML = '🧑‍🎓🏆';
+                avatar1.className = 'podium-avatar winner-jump';
+                rank2.style.opacity = '0.5';
+                rank3.style.opacity = '0.5';
+                scoreMsgEl.textContent = "Ekspedisi Sempurna! Kamu pantas menempati Puncak Podium Juara 1! 🌟";
+                scoreMsgEl.style.color = "var(--success)";
+                playCorrectSound(); // Play fanfare for perfect score
+            } else if (score >= 60) {
+                // Posisi Menengah (Juara 2/3)
+                avatar1.innerHTML = 'NPC🤖'; // Bot takes 1st place
+                avatar1.className = 'podium-avatar';
+                
+                if (score >= 80) {
+                    document.getElementById('avatar2').innerHTML = '🧑‍🎓🥈';
+                    rank3.style.opacity = '0.5';
+                    scoreMsgEl.textContent = "Hebat! Kamu meraih Posisi ke-2 dalam ekspedisi ini! 👍";
+                } else {
+                    document.getElementById('avatar2').innerHTML = 'NPC🤖';
+                    document.getElementById('avatar3').innerHTML = '🧑‍🎓🥉';
+                    scoreMsgEl.textContent = "Bagus! Kamu berhasil masuk ke Posisi ke-3. Terus tingkatkan! 👍";
+                }
+                scoreMsgEl.style.color = "var(--secondary)";
+            } else {
+                // Gagal masuk podium
+                avatar1.innerHTML = 'NPC🤖';
+                document.getElementById('avatar2').innerHTML = 'NPC🤖';
+                document.getElementById('avatar3').innerHTML = 'NPC🤖';
+                avatar1.className = 'podium-avatar';
+                scoreMsgEl.textContent = `Skor kamu ${score}. Jangan menyerah, kamu belum masuk podium. Ayo baca materi dan coba ekspedisi lagi! 💪`;
+                scoreMsgEl.style.color = "var(--danger)";
+                playWrongSound();
+            }
+        }
+
+        function resetQuiz() {
+            initQuiz();
+        }
+
+        // Initialize quiz on load
+        window.onload = function() {
+            initQuiz();
+        }
+
+        // --- Logika Evaluasi Asesmen Sumatif ---
+        const kunciJawabanPG = {
+            pg1: "B",
+            pg2: "A",
+            pg3: "B",
+            pg4: "C",
+            pg5: "B",
+            pg6: "D"
+        };
+
+        // TODO: GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const GAS_URL = 'https://script.google.com/macros/s/AKfy.../exec';
+
+        function evaluateAsesmen() {
+            let skorPG = 0;
+            let benarPG = 0;
+            let salahPG = 0;
+            let jawabanPG = [];
+            let formValid = true;
+
+            // Validasi apakah semua PG sudah diisi
+            for (let i = 1; i <= 6; i++) {
+                const radios = document.getElementsByName(`pg${i}`);
+                let terisi = false;
+                for (let r of radios) {
+                    if (r.checked) terisi = true;
+                }
+                if (!terisi) {
+                    alert(`Soal Pilihan Ganda No. ${i} belum diisi! Silakan lengkapi terlebih dahulu.`);
+                    formValid = false;
+                    break;
+                }
+            }
+
+            if (!formValid) return;
+            
+            // Ubah state tombol menjadi loading
+            const btnSubmit = document.getElementById('btnSubmitAsesmen');
+            btnSubmit.textContent = 'Mengevaluasi & Menyimpan Data... ⏳';
+            btnSubmit.disabled = true;
+
+            // Perhitungan Skor PG, Rekap Jawaban, & Pewarnaan Hasil
+            for (let i = 1; i <= 6; i++) {
+                const radios = document.getElementsByName(`pg${i}`);
+                const optionContainer = document.getElementById(`opt-pg-${i}`);
+                let jawabanUser = "";
+                
+                // Hapus warna sebelumnya jika submit ulang
+                const labels = optionContainer.getElementsByTagName('label');
+                for (let lbl of labels) {
+                    lbl.classList.remove('pg-correct', 'pg-wrong');
+                }
+
+                for (let r of radios) {
+                    if (r.checked) {
+                        jawabanUser = r.value;
+                        jawabanPG.push(jawabanUser); // Simpan inputan siswa
+                        
+                        if (jawabanUser === kunciJawabanPG[`pg${i}`]) {
+                            skorPG += 10; // Setiap PG benar = 10 poin (total 60)
+                            benarPG++; // Tambah counter benar
+                            r.parentElement.classList.add('pg-correct');
+                        } else {
+                            salahPG++; // Tambah counter salah
+                            r.parentElement.classList.add('pg-wrong');
+                            // Highlight jawaban yang benar
+                            for (let r2 of radios) {
+                                if (r2.value === kunciJawabanPG[`pg${i}`]) {
+                                    r2.parentElement.classList.add('pg-correct');
+                                }
+                            }
+                        }
+                    }
+                    r.disabled = true; // Kunci jawaban
+                }
+            }
+
+            // Ambil dan kunci jawaban essay
+            let jawabanEssay = [];
+            const textareas = document.querySelectorAll('.essay-input');
+            textareas.forEach(ta => {
+                ta.disabled = true;
+                jawabanEssay.push(ta.value);
+            });
+
+            // Tampilkan Skor & Rubrik secara lokal
+            const resultBox = document.getElementById('asesmenResult');
+            const skorText = document.getElementById('skorPG');
+            
+            skorText.textContent = `Skor Pilihan Ganda: ${skorPG} / 60`;
+            resultBox.style.display = 'block';
+            
+            // Mainkan Suara
+            if (skorPG >= 40) {
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+            
+            // Scroll otomatis ke bawah agar hasil terlihat
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // --- PROSES KIRIM DATA KE DATABASE GOOGLE SHEETS ---
+            // Ambil data dari login yang sudah tersimpan di variabel global 'studentData'
+            const namaSiswa = studentData.name || "Anonim (Tanpa Login)";
+            const kelasSiswa = studentData.class || "-";
+
+            const payload = {
+                nama: namaSiswa,
+                kelas: kelasSiswa,
+                skor_kuis: score, // Skor Kuis Ekspedisi (sudah ada di variabel global 'score')
+                pg_benar: benarPG,
+                pg_salah: salahPG,
+                skor_pg: skorPG,
+                jawaban_pg: jawabanPG,
+                jawaban_essay: jawabanEssay
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                // Menggunakan text/plain untuk menghindari limitasi CORS Preflight pada GAS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    btnSubmit.textContent = 'Data Berhasil Tersimpan di Database ✔️';
+                    btnSubmit.style.backgroundColor = 'var(--success)';
+                } else {
+                    btnSubmit.textContent = 'Gagal Menyimpan Database ❌';
+                    btnSubmit.style.backgroundColor = 'var(--danger)';
+                    alert('Terjadi kesalahan dari Server: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error pengiriman:', error);
+                // Fallback UI jika koneksi bermasalah (tetap perlihatkan bahwa asesmen sudah dievaluasi)
+                btnSubmit.textContent = 'Asesmen Selesai Dievaluasi ✔️ (Offline)';
+                btnSubmit.style.backgroundColor = 'var(--success)';
+            });
+        }
+
+    </script>
+</body>
+</html>
